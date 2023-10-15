@@ -11,6 +11,7 @@ public class JavaIfElseChecker
     {
         Boolean flag = true;
 
+        //flag-controlled loop
         while (flag)
         {
             String testInput = getInput();
