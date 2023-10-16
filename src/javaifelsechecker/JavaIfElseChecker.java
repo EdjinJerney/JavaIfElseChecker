@@ -45,12 +45,9 @@ public class JavaIfElseChecker
         if (checkIf(textInput))
             if (checkCondition(textInput))
                 if (checkIfStmt(textInput))
-                    if (textInput.toLowerCase().contains("else")) //checks if there is an else part, 
-                    {
-                        if (checkElse(textInput))
-                            if (checkElseStmt(textInput))
-                                validSyntax = true;
-                    }else validSyntax=true;
+                    if (checkElse(textInput))
+                            validSyntax = true;
+                    
                         
         
         
@@ -117,8 +114,8 @@ public class JavaIfElseChecker
     {
         String regex1 = ".*\\)\\{.*";
         String regex2 = "if(\\((?:((?:[a-zA-Z_]\\w*|[0-9])(?:[<>]=?|==|!=)(?:[a-zA-Z_]\\w*|[0-9]*(?:\\.[0-9]+)?))|((?:[a-zA-Z_]\\w*)\\.(?:contains|equals)\\((?:[A-Za-z0-9]+|[\\\"']\\w*[\\\"'])\\))|((?:[a-zA-Z_]\\w*)\\.isEmpty\\(\\)))(?:(&&|\\|\\|)(?:((?:[a-zA-Z_]\\w*|[0-9])(?:[<>]=?|==|!=)(?:[a-zA-Z_]\\w*|[0-9]*(?:\\.[0-9]+)?))|((?:[a-zA-Z_]\\w*)\\.(?:contains|equals)\\((?:[A-Za-z0-9]+|[\\\"']\\w*[\\\"'])\\))|((?:[a-zA-Z_]\\w*+)\\.isEmpty\\(\\))))*\\))\\{(?:(?:(?:System.out.print(?:ln)?\\((?:(?:[a-zA-Z_]\\w*|[\\\"']\\w*[\\\"']))\\)\\;)|(?:[A-Za-z_]\\w*(?:\\+\\+|\\-\\-))\\;|(?:[a-zA-Z_]\\w*\\=(?:[a-zA-Z_]\\w*|[1-9][0-9]*(\\.[0-9]+)?|\\\"(\\w| )*\\\"))\\;)*|(?:[a-zA-Z_]\\w*\\=([a-zA-Z_]\\w*|[1-9][0-9]*(\\.[0-9]+)?)((\\+|\\-|\\*|\\/)([a-zA-Z_]\\w*|[1-9][0-9]*(\\.[0-9]+)?))*)\\;).*";
-        String regex3 = ".*\\}[^\\}]*";
-
+        String regex3 = "if(\\((?:((?:[a-zA-Z_]\\w*|[0-9])(?:[<>]=?|==|!=)(?:[a-zA-Z_]\\w*|[0-9]*(?:\\.[0-9]+)?))|((?:[a-zA-Z_]\\w*)\\.(?:contains|equals)\\((?:[A-Za-z0-9]+|[\\\"']\\w*[\\\"'])\\))|((?:[a-zA-Z_]\\w*)\\.isEmpty\\(\\)))(?:(&&|\\|\\|)(?:((?:[a-zA-Z_]\\w*|[0-9])(?:[<>]=?|==|!=)(?:[a-zA-Z_]\\w*|[0-9]*(?:\\.[0-9]+)?))|((?:[a-zA-Z_]\\w*)\\.(?:contains|equals)\\((?:[A-Za-z0-9]+|[\\\"']\\w*[\\\"'])\\))|((?:[a-zA-Z_]\\w*+)\\.isEmpty\\(\\))))*\\))\\{(?:(?:(?:System.out.print(?:ln)?\\((?:(?:[a-zA-Z_]\\w*|[\\\"']\\w*[\\\"']))\\)\\;)|(?:[A-Za-z_]\\w*(?:\\+\\+|\\-\\-))\\;|(?:[a-zA-Z_]\\w*\\=(?:[a-zA-Z_]\\w*|[1-9][0-9]*(\\.[0-9]+)?|\\\"(\\w| )*\\\"))\\;)*|(?:[a-zA-Z_]\\w*\\=([a-zA-Z_]\\w*|[1-9][0-9]*(\\.[0-9]+)?)((\\+|\\-|\\*|\\/)([a-zA-Z_]\\w*|[1-9][0-9]*(\\.[0-9]+)?))*)\\;)\\}.*";
+        
         Pattern ptn1 = Pattern.compile(regex1);
         Pattern ptn2 = Pattern.compile(regex2);
         Pattern ptn3 = Pattern.compile(regex3);
@@ -153,24 +150,44 @@ public class JavaIfElseChecker
     static boolean checkElse(String testStmt)
     {
         String regex = ".*\\}else.*";
+        String noElse = "if(\\((?:((?:[a-zA-Z_]\\w*|[0-9])(?:[<>]=?|==|!=)(?:[a-zA-Z_]\\w*|[0-9]*(?:\\.[0-9]+)?))|((?:[a-zA-Z_]\\w*)\\.(?:contains|equals)\\((?:[A-Za-z0-9]+|[\\\"']\\w*[\\\"'])\\))|((?:[a-zA-Z_]\\w*)\\.isEmpty\\(\\)))(?:(&&|\\|\\|)(?:((?:[a-zA-Z_]\\w*|[0-9])(?:[<>]=?|==|!=)(?:[a-zA-Z_]\\w*|[0-9]*(?:\\.[0-9]+)?))|((?:[a-zA-Z_]\\w*)\\.(?:contains|equals)\\((?:[A-Za-z0-9]+|[\\\"']\\w*[\\\"'])\\))|((?:[a-zA-Z_]\\w*+)\\.isEmpty\\(\\))))*\\))\\{(?:(?:(?:System.out.print(?:ln)?\\((?:(?:[a-zA-Z_]\\w*|[\\\"']\\w*[\\\"']))\\)\\;)|(?:[A-Za-z_]\\w*(?:\\+\\+|\\-\\-))\\;|(?:[a-zA-Z_]\\w*\\=(?:[a-zA-Z_]\\w*|[1-9][0-9]*(\\.[0-9]+)?|\\\"(\\w| )*\\\"))\\;)*|(?:[a-zA-Z_]\\w*\\=([a-zA-Z_]\\w*|[1-9][0-9]*(\\.[0-9]+)?)((\\+|\\-|\\*|\\/)([a-zA-Z_]\\w*|[1-9][0-9]*(\\.[0-9]+)?))*)\\;)\\}";
+        
         Pattern ptn1 = Pattern.compile(regex);
         Pattern ptn2 = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
-
-        if (ptn1.matcher(testStmt).matches())
+        Pattern ptn3 = Pattern.compile(noElse);
+        
+        if (!testStmt.toLowerCase().contains("else"))
         {
-            return true;
-        } else if (ptn2.matcher(testStmt).matches())
+            //checks if there is code after <if-stmt>
+            if(ptn3.matcher(testStmt).matches())
+            {
+                return true;
+            }
+            else
+            {
+                System.out.println("Invalid Statement -- missing 'else' statement");
+                System.exit(0);
+                return false;
+            }
+            
+        }
+        else if (ptn1.matcher(testStmt).matches())
+        {
+            return checkElseStmt(testStmt);
+        } 
+        else if (ptn2.matcher(testStmt).matches())
         {
             System.out.println("Invalid Statement -- 'else' must be lowercase!");
             System.exit(0);
             return false;
-        } else
+        } 
+        else
         {
             System.out.println("Invalid Statement --  missing 'else' statement");
             System.exit(0);
             return false;
         }
-
+        
     }
 
     static boolean checkElseStmt(String testStmt)
@@ -182,7 +199,7 @@ public class JavaIfElseChecker
         Pattern ptn1 = Pattern.compile(regex1);
         Pattern ptn2 = Pattern.compile(regex2);
         Pattern ptn3 = Pattern.compile(regex3);
-
+        
         //checks the opening curly brace of the statement
         if (!ptn1.matcher(testStmt).matches())
         {
