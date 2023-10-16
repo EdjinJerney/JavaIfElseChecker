@@ -7,6 +7,7 @@ public class JavaIfElseChecker
 {
     static Scanner sc = new Scanner(System.in);
 
+    //main method
     public static void main(String[] args)
     {
         Boolean flag = true;
